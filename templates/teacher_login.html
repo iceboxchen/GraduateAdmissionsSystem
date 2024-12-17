@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <title>老师登录</title>
+</head>
+<body>
+    <div>
+        <h1>用户登录</h1>
+        <!--将登录信息放到一个form中-->
+        <form  action="{{ url_for('teacher2_login') }}" method="POST">
+            <input type="text" name="username" placeholder="请输入用户名" />
+            <br/>
+            <input type="password" name="password" placeholder="请输入密码（小于12位）" />
+            <br/>
+            <!--jinja2的函数-->
+            {% if message %} {{message}} {% endif %}
+            <br/>
+            <input type="submit" value="登录" />
+            <input type="reset" value="重置" />
+        </form>
+    </div>
+</body>
+</html>

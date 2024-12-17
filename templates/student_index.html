@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"  type="text/css" href="/static/style.css">
+    <title>bjfu研究生报名系统</title>
+    <style>
+    .process-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        margin-top: 20px;
+    }
+    .process-step {
+        background-color: #e9ecef;
+        padding: 10px 20px;
+        border-radius: 5px;
+        margin: 0 10px;
+        max-width: 200px; /* 设置最大宽度 */
+        max-height: 100px; /* 设置最大高度 */
+        line-height: 50px; /* 设置行高与最大高度一致，使文字垂直居中 */
+        text-align: center;
+        font-weight: bold;
+    }
+    .process-step.current {
+        background-color: #28a745;
+        color: white;
+    }
+    .process-step.complete {
+        background-color: #17a2b8;
+        color: white;
+    }
+    .process-step.incomplete {
+        background-color: #f8f9fa;
+        color: #495057;
+    }
+    .line {
+        stroke: #ced4da;
+        stroke-width: 2;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .line.complete {
+        stroke: #17a2b8;
+    }
+    .line.incomplete {
+        stroke: #e9ecef;
+    }
+    .line.current {
+        stroke: #28a745;
+    }
+</style>
+</head>
+<body>
+    <div>
+    <h1>您好，{{ username }}，欢迎进入本系统</h1>
+        <a href="{{ url_for('index') }}">退出</a>
+        <br/>
+    </div>
+    <div class="process-container">
+    <svg width="100%" height="2" class="line current"></svg>
+    <div class="process-step current">复试报名</div>
+    <svg width="100%" height="2" class="line current"></svg>
+    <div class="process-step current">提交资料</div>
+    <svg width="100%" height="2" class="line current"></svg>
+    <div class="process-step incomplete">复试进行</div>
+    <svg width="100%" height="2" class="line incomplete"></svg>
+    <div class="process-step incomplete">老师选择</div>
+    <svg width="100%" height="2" class="line incomplete"></svg>
+    <div class="process-step incomplete">成功录取</div>
+</div>
+</body>
+</html>
+
