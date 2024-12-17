@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>身份选择</title>
+</head>
+<body>
+    <h1>请选择您的身份</h1>
+    <a href="{{ url_for('teacher_login') }}"><button>我是老师</button></a>
+    <a href="{{ url_for('student_login') }}"><button>我是学生</button></a>
+    <a href="{{ url_for('admin') }}"><button>我是管理员</button></a>
+    <h2><a href="{{ url_for('currentassistant') }}" class="button-style">
+        <span>招生简章</span>
+        </a>
+    </h2>
+</body>
+</html>
