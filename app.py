@@ -5,8 +5,7 @@ from flask import url_for
 from flask import request
 from sympy.codegen.ast import continue_
 
-from model.check_login import is_existed_student, exist_user_student, is_null, is_existed_teacher, exist_user_teacher, \
-    is_existed_admin, exist_user_admin
+from model.check_login import is_existed_student, exist_user_student, is_null, is_existed_teacher, exist_user_teacher, is_existed_admin, exist_user_admin
 from model.check_regist import add_user
 from model.admin_submit import is_null_submit, admin_submit
 from model.getCurrentassistantData import getMajorNote, getSubjectNote, getNeedStudent, getSubject, getMajor

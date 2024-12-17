@@ -58,14 +58,25 @@
 </head>
 <body>
     <div>
-    <h1>您好，{{ username }}，欢迎进入本系统</h1>
+        <h1>您好，{{ username }}，欢迎进入本系统</h1>
         <a href="{{ url_for('index') }}">退出</a>
         <br/>
     </div>
-    <div class="process-step current">
-        <a href="{{ url_for('student_submit') }}" class="button">提交资料</a>
+    <div class="process-container">
+        <svg width="100%" height="2" class="line current"></svg>
+        <div class="process-step current">复试报名</div>
+        <svg width="100%" height="2" class="line current"></svg>
+        <div class="process-step current">提交资料</div>
+        <svg width="100%" height="2" class="line current"></svg>
+        <div class="process-step incomplete">复试进行</div>
+        <svg width="100%" height="2" class="line incomplete"></svg>
+        <div class="process-step incomplete">老师选择</div>
+        <svg width="100%" height="2" class="line incomplete"></svg>
+        <div class="process-step incomplete">成功录取</div>
+        <div class="process-step current">
+            <a href="{{ url_for('student_submit') }}" class="button">提交资料</a>
+        </div>
     </div>
-</div>
 </body>
 </html>
 
