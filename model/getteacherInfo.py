@@ -11,13 +11,14 @@ class TeacherInfo:
         self.teacherExperience = teacherExperience
         self.teacherDirection = teacherDirection
 
+
 def getteacherInfo(id):
     sql = """
             SELECT teacherName, academyname as teacheracademyname, teacherTitle, teacherExperience, teacherDirection
             FROM teacher
-            WHERE teacherID = %s
-        """
-    cur.execute(sql, (id,))  # 注意：这里应该是一个元组，即使只有一个元素
+            WHERE teacherID = '%s'
+        """ % (id)
+    cur.execute(sql)  # 注意：这里应该是一个元组，即使只有一个元素
     teacher = cur.fetchone()  # 使用 fetchone() 因为您只想获取一个教师记录
     if teacher:
         print(teacher)
@@ -27,9 +28,9 @@ def getteacherInfo(id):
             FROM major as m
             JOIN currentassistant as c ON m.majID = c.majID
             JOIN teacher as t ON c.teacherID = t.teacherID
-            WHERE t.teacherID = %s
-        """
-        cur.execute(sql, (id,))
+            WHERE t.teacherID = '%s'
+        """ % (id)
+        cur.execute(sql)
         majorNames = cur.fetchall()
         print(majorNames)
 
