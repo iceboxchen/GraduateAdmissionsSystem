@@ -9,6 +9,7 @@ from model.check_login import is_existed_student, exist_user_student, is_null, i
 from model.check_regist import add_user
 from model.admin_submit import is_null_submit, admin_submit
 from model.getCurrentassistantData import getMajorNote, getSubjectNote, getNeedStudent, getSubject, getMajor
+from model.getstudentState import getstudentState, getstudentState
 from model.getteacherInfo import getteacherInfo
 from model import materials
 
@@ -58,8 +59,7 @@ def submit_scores():
             login_massage = "温馨提示：都是是必填项"
             return render_template('admin_index.html', message=login_massage)
         else:
-            admin_submit(request.form['studentID'], request.form['year'], request.form['Firstscore'],
-                         request.form['Englishscore'], request.form['Facescore'], request.form['Majorscore'])
+            admin_submit(request.form['studentID'], request.form['year'], request.form['Firstscore'], request.form['Englishscore'], request.form['Facescore'], request.form['Majorscore'])
             return render_template('submit_success.html')
     return render_template('admin_index.html')
 
@@ -102,8 +102,15 @@ def student2_login():
         if is_null(username, password):
             login_massage = "温馨提示：账号和密码是必填"
             return render_template('student_login.html', message=login_massage)
-        elif is_existed_student(username, password):
-            return render_template('student_index.html', username=username)
+        if is_existed_student(username, password):
+            # 假设用户名即为学生ID
+            student_State = getstudentState(username)
+            print(student_State)
+            if student_State is not None:
+                return render_template('student_index.html', student_State=student_State)
+            else:
+                login_message = "温馨提示：无法获取学生状态"
+                return render_template('student_login.html', message=login_message)
         elif exist_user_student(username):
             login_massage = "温馨提示：密码错误，请输入正确密码"
             return render_template('student_login.html', message=login_massage)
@@ -139,8 +146,7 @@ def register():
             login_massage = "温馨提示：用户已存在，请直接登录"
             return render_template('student_register.html', message=login_massage)
         else:
-            add_user(request.form['username'], request.form['password'], request.form['studentID'],
-                     request.form['studentName'], request.form['studentIDnumber'], request.form['studentPhone'])
+            add_user(request.form['username'], request.form['password'], request.form['studentID'], request.form['studentName'], request.form['studentIDnumber'], request.form['studentPhone'])
             return render_template('student_index.html', username=username)
     return render_template('student_register.html')
 
@@ -235,3 +241,6 @@ def student2_submit():
 
 if __name__ == "__main__":
     app.run()
+
+
+

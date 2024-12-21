@@ -3,12 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>身份选择</title>
+    <style>
+        /* 使整个页面内容居中 */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* 按钮样式 */
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #5cb8b0;
+            color: white;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
+        }
+
+        /* 链接样式，移除默认的蓝色并添加一些内边距和文字装饰 */
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* 为招生简章链接添加样式 */
+        .button-style {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            color: #333;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-style:hover {
+            background-color: #e7e7e7;
+        }
+
+        /* 为招生简章的span标签添加样式 */
+        .button-style span {
+            display: block; /* 使span独占一行 */
+        }
+    </style>
 </head>
 <body>
     <h1>请选择您的身份</h1>
     <a href="{{ url_for('teacher_login') }}"><button>我是老师</button></a>
     <a href="{{ url_for('student_login') }}"><button>我是学生</button></a>
-    <a href="{{ url_for('admin') }}"><button>我是管理员</button></a>
+    <a href="{{ url_for('admin') }}"><button>我是管理</button></a>
     <h2><a href="{{ url_for('currentassistant') }}" class="button-style">
         <span>招生简章</span>
         </a>

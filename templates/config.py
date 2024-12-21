@@ -1,4 +1,4 @@
-# import pyodbc
+import pyodbc
 import pymssql
 
 
@@ -22,3 +22,15 @@ def iconnect():
 
 
 conn = iconnect()
+
+# 孙的pyodbc的写法
+
+# conn_str = (
+#     'DRIVER={ODBC Driver 17 for SQL Server};'
+#     'SERVER=127.0.0.1;'
+#     'DATABASE=GraduateAdmissionsSystem;'
+#     'UID=sa;'
+#     'PWD=sc040717;'  # 之前设置的密码
+# )
+
+# conn = pyodbc.connect(conn_str)
