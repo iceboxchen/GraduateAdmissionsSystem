@@ -3,6 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <title>管理员输入学生成绩</title>
+    <style>
+        /* 设置页面边距 */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 设置表单样式 */
+        form {
+            width: 300px; /* 根据需要调整宽度 */
+            margin: 20px auto; /* 水平居中，并添加上边距 */
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            text-align: center;
+        }
+
+        /* 设置标签和输入框的布局 */
+        label {
+            display: block; /* 使标签独占一行 */
+            margin-bottom: 5px; /* 增加一些间距 */
+        }
+
+        input[type="text"] {
+            width: calc(100% - 22px); /* 输入框宽度减去内边距 */
+            padding: 10px; /* 增加内边距 */
+            margin-bottom: 15px; /* 增加一些间距 */
+            border: 1px solid #ddd; /* 添加边框 */
+            border-radius: 5px; /* 圆角边框 */
+        }
+
+        input[type="submit"] {
+            width: 100%; /* 提交按钮宽度与表单相同 */
+            padding: 10px;
+            background-color: #5cb85c; /* 设置背景颜色 */
+            color: white; /* 设置文字颜色 */
+            border: none; /* 移除边框 */
+            border-radius: 5px; /* 圆角边框 */
+            cursor: pointer; /* 鼠标样式 */
+        }
+
+        /* 设置换行后的间距 */
+        br {
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -10,27 +57,27 @@
     <form action="{{ url_for('submit_scores') }}" method="post">
         <label for="studentID">准考证号:</label>
         <input type="text" name="studentID" required>
-        <br><br>
+        <br>
 
         <label for="year">年份:</label>
         <input type="text" name="year" required>
-        <br><br>
+        <br>
 
         <label for="Firstscore">初试成绩:</label>
         <input type="text" name="Firstscore" required>
-        <br><br>
+        <br>
 
         <label for="Englishscore">外语听力及口语成绩:</label>
         <input type="text" name="Englishscore" required>
-        <br><br>
+        <br>
 
         <label for="Facescore">综合素质面试成绩:</label>
         <input type="text" name="Facescore" required>
-        <br><br>
+        <br>
 
         <label for="Majorscore">专业知识测试成绩:</label>
         <input type="text" name="Majorscore" required>
-        <br><br>
+        <br>
 
         <input type="submit" value="提交成绩" />
     </form>
