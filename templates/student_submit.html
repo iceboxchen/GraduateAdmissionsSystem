@@ -17,12 +17,21 @@
             text-align: left;
             font-weight: normal; /* 去除加粗效果 */
         }
+        input-file-button {
+            padding: 6px 25px;
+            background: #00bfff;
+            border-radius: 4px; /*边框弧度*/
+            color: white;
+            cursor: pointer;
+            height: 90%;
+        }
     </style>
     <script>
+        // 跳转到学生主页
         function toStudentIndex() {
             window.location.href = "{{ url_for('student_index') }}";
         }
-
+        //控制显示提交按钮
         function toggleButtons() {
             var i = true; // 假设i的值在这里被设置
             var buttons = document.querySelectorAll('input[type="submit"], input[type="reset"]');
@@ -35,7 +44,7 @@
 <body onload="toggleButtons()">
 <div class="container">
     <h1>北京林业大学硕士研究生入学复试登记表</h1>
-    <form>
+    <form action="student2_submit" id="myForm" method="POST">
         <table style="border:0">
             <tr>
                 <th style="border:0">
@@ -44,38 +53,48 @@
                 </th>
                 <th style="text-align:right; border:0">
                     <label for="admission-number">考生准考证号：</label>
-                    <input id="admission-number" name="admission-number" type="text">
+                    <input id="admission-number" name="admission-number" type="text" disabled>
                 </th>
             </tr>
         </table>
         <table>
             <tr>
                 <td>姓名</td>
-                <td style="width:90px"><input id="name" name="name" style="width:100%" type="text">
+                <td style="width:80px"><input id="name" name="name" style="width:80px" type="text" disabled>
                 </td>
-                <td>性别</td>
-                <td style="width:90px"><input id="gender" name="gender" style="width: 100px;" type="text"></td>
-                <td>考生类别</td>
+                <td style="width:60px">性别</td>
+                <td style="width:90px">
+                    <select id="gender" name="gender" style="width:80px">
+                        <option selected value="">请选择</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                </td>
+                <td style="width:80px">考生类别</td>
                 <td colspan="3">
-                    <input id="fresh-graduate" name="graduate-type" type="checkbox" value="应届生">
+                    <input id="fresh-graduate" name="fresh-graduate" type="checkbox" value="1">
                     <label for="fresh-graduate">应届生</label>
-                    <input id="previous-graduate" name="graduate-type" type="checkbox" value="往届生">
+                    <input id="previous-graduate" name="previous-graduate" type="checkbox" value="1">
                     <label for="previous-graduate">往届生</label>
-                    <input id="equal-education" name="graduate-type" type="checkbox" value="同等学力">
+                    <input id="equal-education" name="equal-education" type="checkbox" value="1">
                     <label for="equal-education">同等学力</label>
 
                     <br>
 
-                    <input id="targeted-student" name="student-type" type="checkbox" value="定向生">
+                    <input id="targeted-student" name="targeted-student" type="checkbox" value="1">
                     <label for="targeted-student">定向生</label>
-                    <input id="non-targeted-student" name="student-type" type="checkbox" value="非定向考生">
+                    <input id="non-targeted-student" name="non-targeted-student" type="checkbox" value="1">
                     <label for="non-targeted-student">非定向考生</label>
                 </td>
             </tr>
             <tr>
                 <td colspan="2"><label for="graduation-school">本科毕业学校及时间：</label></td>
                 <td colspan="2">
-                    <input id="graduation-school" name="graduation-school" style="width:100%" type="text">
+                    <input id="graduation-school" name="graduation-school" placeholder="例:北京林业大学"
+                           style="width:100px"
+                           type="text">
+                    <input id="graduation-time" name="graduation-time" placeholder="例:2024" style="width:50px"
+                           type="text">
                 </td>
                 <td>
                     <label for="major-study">毕业专业：</label>
@@ -88,7 +107,7 @@
                 <td colspan="2">考生联系方式</td>
                 <td colspan="6">
                     <label for="contact-phone">手机：</label>
-                    <input id="contact-phone" name="contact-phone" type="text">
+                    <input id="contact-phone" name="contact-phone" type="text" disabled>
 
                     <label for="emergency-contact">紧急联系人手机：</label>
                     <input id="emergency-contact" name="emergency-contact" type="text">
@@ -98,9 +117,9 @@
                 <!--要改的-->
                 <td colspan="2">报考导师优先意向：</td>
                 <td colspan="6">
-                    1、<input id="advisor-preference1" name="advisor-preference1" type="text">
-                    2、<input id="advisor-preference2" name="advisor-preference2" type="text">
-                    3、<input id="advisor-preference3" name="advisor-preference3" type="text">
+                    1、<input id="advisor-preference1" name="advisor-preference1" style="width:150px" type="text">
+                    2、<input id="advisor-preference2" name="advisor-preference2" style="width:150px" type="text">
+                    3、<input id="advisor-preference3" name="advisor-preference3" style="width:150px" type="text">
                 </td>
             </tr>
             <tr>
@@ -145,7 +164,13 @@
             <tr>
                 <!--需要name的photo-->
                 <td class="signature" colspan="3">考生签名确认上述信息：</td>
-                <td colspan="5"><input alt="name" src="" type="image"></td>
+                <td colspan="5">
+                    <label class="input-file-button" for="signatureUpload" style="text-decoration:underline;color:purple;">点击上传电子签名</label>
+                    <input accept="image/*" id="signatureUpload" name="signatureUpload" style="display:none;"
+                           type="file"/>
+                    <img alt="" id="signaturePreview" src="#" style="max-height: 30px;">
+                </td>
+
             </tr>
             <tr>
                 <td colspan="8" style="text-decoration:underline;text-align:center">
@@ -163,7 +188,7 @@
                     复试小组对考生复试表现的综合评价（外语水平，专业知识，综合素质，培养潜质等方面）：
                     <textarea cols="50" name="evaluation" rows="4" style="width:100%;resize:none;"></textarea>
                     <p style="text-align:right">
-                        复试组长签字：<input alt="name" src="" type="image">
+                        复试组长签字：<img alt="" id="reexaminename" src="#" style="max-height: 30px;">
                     </p>
                 </td>
             </tr>
@@ -191,24 +216,59 @@
             <tr>
                 <td colspan="2">复试组成员签字：</td>
                 <td colspan="6">
-                    <input alt="names" src="" type="image">
+                    <img alt="" id="reexaminenames" src="#" style="max-height: 30px;">
                 </td>
             </tr>
             <tr>
                 <td colspan="2">拟录取导师签字：</td>
                 <td colspan="6">
-                    <input alt="name" src="" type="image">
+                    <img alt="" id="teachername" src="#" style="max-height: 30px;">
                 </td>
             </tr>
         </table>
         <br>
         <div>
-            <input id="save" type="submit" value="暂存"/>
-            <input id="submittable" type="submit" value="提交"/>
-            <input id="reset" type="reset" onclick="" value="重置"/>
-            <input type="button" onclick="toStudentIndex()" value="退出"/>
+            <input id="save" type="submit" value="暂存" name="save"/>
+            <input id="restore" type="button" value="恢复" name="save"/>
+            <input id="submittable" type="submit" value="提交" name="save"/>
+            <input id="reset" onclick="" type="reset" value="重置"/>
+            <input onclick="toStudentIndex()" type="button" value="退出"/>
         </div>
     </form>
+    <div id="popupMessage" style="display:none;" title="消息">
+        <p>这里将显示接收到的数据。</p>
+    </div>
 </div>
+<script>
+    // 上传后显示学生签名图片
+    document.getElementById('signatureUpload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgPreview = document.getElementById('signaturePreview');
+                imgPreview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+<script>
+$(document).ready(function() {
+    $('#submitBtn').click(function() {
+        $.ajax({
+            url: '/student_submit', // 假设这是你的服务器端点
+            type: 'GET', // 或者 'POST'，取决于你的服务器端点要求
+            success: function(response) {
+                // 假设服务器返回的是纯文本数据
+                $('#popupMessage').text(response).dialog('open');
+            },
+            error: function() {
+                $('#popupMessage').text('获取数据失败。').dialog('open');
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>
