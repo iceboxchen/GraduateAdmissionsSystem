@@ -1,38 +1,11 @@
+<!-- 管理员主界面 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>管理员输入学生成绩</title>
+    <title>Title</title>
 </head>
 <body>
 
-    <h1>学生成绩输入</h1>
-    <form action="{{ url_for('submit_scores') }}" method="post">
-        <label for="studentID">准考证号:</label>
-        <input type="text" name="studentID" required>
-        <br><br>
-
-        <label for="year">年份:</label>
-        <input type="text" name="year" required>
-        <br><br>
-
-        <label for="Firstscore">初试成绩:</label>
-        <input type="text" name="Firstscore" required>
-        <br><br>
-
-        <label for="Englishscore">外语听力及口语成绩:</label>
-        <input type="text" name="Englishscore" required>
-        <br><br>
-
-        <label for="Facescore">综合素质面试成绩:</label>
-        <input type="text" name="Facescore" required>
-        <br><br>
-
-        <label for="Majorscore">专业知识测试成绩:</label>
-        <input type="text" name="Majorscore" required>
-        <br><br>
-
-        <input type="submit" value="提交成绩" />
-    </form>
 </body>
 </html>

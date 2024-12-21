@@ -1,11 +1,153 @@
-<!-- 老师双向选择学生界面 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学科集中商议页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            flex: 1;
+            margin: 20px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>学科集中商议</h1>
+        <p>教师ID: <span id="teacherID">{{ teacherID }}</span> | 当前招生指标数: <span id="needstudent">{{ needstudent }}</span></p>
+    </header>
 
+    <div class="container">
+        <h2>未被录取的学生</h2>
+        <table id="unadmittedStudents">
+            <thead>
+                <tr>
+                    <th>准考证号</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script>
+        // 获取 URL 参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const teacherID = urlParams.get('teacherID');
+        let needstudent = parseInt(urlParams.get('needstudent'));
+
+        // 显示到页面
+        document.getElementById("teacherID").textContent = teacherID;
+        document.getElementById("needstudent").textContent = needstudent;
+
+        // 加载未录取学生数据
+        window.onload = function () {
+            fetch(`/get_pending_students_info?teacherID=${teacherID}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById("unadmittedStudents").getElementsByTagName('tbody')[0];
+
+                data.students.forEach(student => {
+                    const row = tableBody.insertRow();
+                    const admitBtn = document.createElement('button');
+                    admitBtn.textContent = '确认录取';
+                    admitBtn.classList.add('admitBtn');
+                    admitBtn.addEventListener('click', () => admitStudent(student, row));
+
+                    row.innerHTML = `<td>${student.examID}</td>`;
+                    row.appendChild(admitBtn);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("加载未录取学生信息失败，请稍后再试！");
+            });
+        };
+
+        // 确认录取学生
+        function admitStudent(student, row) {
+            if (needstudent > 0) {
+                if (window.confirm(`确认录取学生 ${student.examID} 吗？`)) {
+                    fetch('/admit_student', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            teacherID: teacherID,
+                            studentID: student.examID
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(`${student.examID} 录取成功！`);
+                            needstudent--;  // 招生人数减一
+                            document.getElementById("needstudent").textContent = needstudent;
+                            row.classList.add("selected");  // 更新已录取学生的样式
+
+                            // 禁用录取按钮
+                            const admitBtn = row.querySelector('.admitBtn');
+                            if (admitBtn) admitBtn.disabled = true;
+                        } else {
+                            alert("操作失败，请稍后再试！");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert("出现错误，请稍后再试！");
+                    });
+                }
+            } else {
+                alert("招生指标已用完，无法录取更多学生！");
+            }
+        }
+    </script>
 </body>
 </html>
