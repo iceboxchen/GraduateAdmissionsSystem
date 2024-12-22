@@ -4,24 +4,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet"  type="text/css" href="/static/style.css">
-    <title>注册</title>
+    <title>学生注册</title>
+    <style>
+        /* 使整个页面内容居中 */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* 设置注册表单的样式 */
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px; /* 可以根据需要调整宽度 */
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        /* 设置输入框的样式 */
+        input[type="text"],
+        input[type="password"] {
+            width: calc(100% - 22px); /* 输入框宽度减去内边距 */
+            padding: 10px; /* 内边距 */
+            margin: 10px 0; /* 上下边距 */
+            border: 1px solid #ddd; /* 边框样式 */
+            border-radius: 5px; /* 圆角边框 */
+            box-sizing: border-box; /* 使内边距和边框包含在宽度内 */
+        }
+
+        /* 设置按钮的样式 */
+        input[type="submit"],
+        input[type="reset"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+
+        /* 设置提交按钮的样式 */
+        input[type="submit"] {
+            background-color: #28a745;
+        }
+
+        /* 设置重置按钮的样式 */
+        input[type="reset"] {
+            background-color: #dc3545;
+        }
+
+        /* 设置注册链接的样式 */
+        a {
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div>
-    <h1>用户注册</h1>
-    <form method="POST">
-        <input type="text" name="username" placeholder="请输入用户名" />
-        <br/>
-        <input type="password" name="password" placeholder="请输入密码（小于12位）" />
-        <br/>
-        <!--jinja2的函数-->
-        {% if message %} {{message}} {% endif %}
-        <br/>
-        <input type="submit" value="注册" />
-        <input type="reset" value="重置" />
-        <a href="{{ url_for('user_login') }}">登录</a>
-    </form>
+    <div class="container">
+        <h1>用户注册</h1>
+        <form method="POST">
+            <input type="text" name="username" placeholder="请输入用户名" />
+            <br/>
+            <input type="password" name="password" placeholder="请输入密码（小于12位）" />
+            <br/>
+            <input type="text" name="studentID" placeholder="请输入准考证号" />
+            <br/>
+            <input type="text" name="studentName" placeholder="请输入姓名" />
+            <br/>
+            <input type="text" name="studentIDnumber" placeholder="请输入身份证号" />
+            <br/>
+            <input type="text" name="studentPhone" placeholder="请输入电话号码" />
+            <br/>
+            {% if message %}
+                <div>{{ message }}</div>
+            {% endif %}
+            <br/>
+            <input type="submit" value="注册" />
+            <input type="reset" value="重置" />
+            <a href="{{ url_for('student_login') }}">登录</a>
+        </form>
     </div>
 </body>
 </html>
