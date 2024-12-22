@@ -23,6 +23,7 @@ def iconnect():
 
 conn = iconnect()
 
+
 # 孙的pyodbc的写法
 
 # conn_str = (

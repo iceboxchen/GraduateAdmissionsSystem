@@ -1,11 +1,373 @@
 <!-- 老师根据一二三志愿选择学生界面 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师招生选择页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        .container {
+            flex: 1;
+            margin: 20px;
+            padding-bottom: 80px;
+            overflow-y: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #ddd;
+            cursor: not-allowed;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            background-color: #f1f1f1;
+        }
+        #studentInfo {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 500px;
+            z-index: 10;
+        }
+        .student-detail {
+            margin: 5px 0;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .close-btn:hover {
+            background-color: #d9534f;
+        }
+        .selected {
+            background-color: #e0f7e0;
+        }
+        .rejected {
+            background-color: #f8d7da;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>教师招生选择系统</h1>
+        <p>教师ID: <span id="teacherID">{{ teacherID }}</span> | 学年：<span id="year">{{ year }}</span> | 二级学科ID: <span id="majID">{{ majID }}</span> | 二级学科名: <span id="majName">{{ majName }}</span> | 当前招生指标数: <span id="needstudent">{{ needstudent }}</span></p>
+    </header>
 
+    <div class="container">
+        <h2>报考学生列表</h2>
+
+        <h3>第一志愿</h3>
+        <table id="volunteerone">
+            <thead>
+                <tr>
+                    <th>邮箱</th>
+                    <th>准考证号</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h3>第二志愿</h3>
+        <table id="volunteertwo">
+            <thead>
+                <tr>
+                    <th>邮箱</th>
+                    <th>准考证号</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h3>第三志愿</h3>
+        <table id="volunteerthree">
+            <thead>
+                <tr>
+                    <th>邮箱</th>
+                    <th>准考证号</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div id="studentInfo">
+            <button class="close-btn" onclick="closeStudentInfo()">关闭</button>
+            <div id="student-details"></div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <button id="confirmBtn" onclick="confirmAllSelections()">确认所有选择</button>
+    </div>
+
+    <script>
+        let needstudent = parseInt(document.getElementById("needstudent").textContent);
+        const teacherID = document.getElementById("teacherID").textContent;
+
+
+        // 确认选择的逻辑
+function confirmSelection(student, row, volunteerType) {
+    if (needstudent > 0) {
+        if (window.confirm(`确认选择学生 ${student.name} 吗？`)) {
+            // 根据志愿类型设置 chosennum
+            let chosennum = 0;
+            if (volunteerType === 'volunteerone') {
+                chosennum = 1;  // 第一志愿
+            } else if (volunteerType === 'volunteertwo') {
+                chosennum = 2;  // 第二志愿
+            } else if (volunteerType === 'volunteerthree') {
+                chosennum = 3;  // 第三志愿
+            }
+
+            // 发送请求更新学生选择状态以及 chosennum 字段
+            fetch('/update_student_volunteer_choice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    teacherID: teacherID,
+                    examID: student.examID,
+                    status: 'confirmed',
+                    chosennum: chosennum
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`${student.name} 选择成功！`);
+                    // 更新界面上的招生指标数
+                    needstudent--;
+                    document.getElementById("needstudent").textContent = needstudent;
+                    row.classList.add("selected");  // 设置已选择学生的样式
+
+                    // 禁用当前学生的按钮
+                    const confirmBtn = row.querySelector('.confirmBtn');
+                    const rejectBtn = row.querySelector('.rejectBtn');
+                    if (confirmBtn) confirmBtn.disabled = true;
+                    if (rejectBtn) rejectBtn.disabled = true;
+                } else {
+                    alert("操作失败，请稍后再试！");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("出现错误，请稍后再试！");
+            });
+        }
+    } else {
+        alert("招生指标已用完，无法选择更多学生！");
+    }
+}
+
+        // 拒绝选择的逻辑
+        function rejectSelection(student, row) {
+            if (window.confirm(`确认拒绝学生 ${student.name} 吗？`)) {
+                fetch('/update_student_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        teacherID: teacherID,
+                        examID: student.examID,
+                        status: 'rejected'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`${student.name} 已被拒绝！`);
+                        row.classList.add("rejected");  // 设置已拒绝学生的样式
+
+                        // 禁用当前学生的按钮
+                        const confirmBtn = row.querySelector('.confirmBtn');
+                        const rejectBtn = row.querySelector('.rejectBtn');
+                        if (confirmBtn) confirmBtn.disabled = true;
+                        if (rejectBtn) rejectBtn.disabled = true;
+                    } else {
+                        alert("操作失败，请稍后再试！");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("出现错误，请稍后再试！");
+                });
+            }
+        }
+
+        // 加载学生数据
+        window.onload = function () {
+    const teacherID = document.getElementById("teacherID").textContent;
+
+    // 检查teacherID是否为空
+    if (!teacherID) {
+        alert("教师ID不能为空！");
+        return;
+    }
+
+    fetch(`/get_student_volunteer_info?teacherID=${teacherID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const tables = {
+            volunteerone: document.getElementById("volunteerone").getElementsByTagName('tbody')[0],
+            volunteertwo: document.getElementById("volunteertwo").getElementsByTagName('tbody')[0],
+            volunteerthree: document.getElementById("volunteerthree").getElementsByTagName('tbody')[0]
+        };
+
+        data.volunteerone.forEach(student => {
+            const row = tables.volunteerone.insertRow();
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = '确认选择';
+            confirmBtn.classList.add('confirmBtn');
+            confirmBtn.addEventListener('click', () => confirmSelection(student, row, 'volunteerone'));
+
+            const rejectBtn = document.createElement('button');
+            rejectBtn.textContent = '拒绝选择';
+            rejectBtn.classList.add('rejectBtn');
+            rejectBtn.addEventListener('click', () => rejectSelection(student, row));
+
+            row.innerHTML = `<td>${student.name}</td>
+                             <td>${student.examID}</td>`;
+            row.appendChild(confirmBtn);
+            row.appendChild(rejectBtn);
+        });
+
+        data.volunteertwo.forEach(student => {
+            const row = tables.volunteertwo.insertRow();
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = '确认选择';
+            confirmBtn.classList.add('confirmBtn');
+            confirmBtn.addEventListener('click', () => confirmSelection(student, row, 'volunteertwo'));
+
+            const rejectBtn = document.createElement('button');
+            rejectBtn.textContent = '拒绝选择';
+            rejectBtn.classList.add('rejectBtn');
+            rejectBtn.addEventListener('click', () => rejectSelection(student, row));
+
+            row.innerHTML = `<td>${student.name}</td>
+                             <td>${student.examID}</td>`;
+            row.appendChild(confirmBtn);
+            row.appendChild(rejectBtn);
+        });
+
+        data.volunteerthree.forEach(student => {
+            const row = tables.volunteerthree.insertRow();
+            const confirmBtn = document.createElement('button');
+            confirmBtn.textContent = '确认选择';
+            confirmBtn.classList.add('confirmBtn');
+            confirmBtn.addEventListener('click', () => confirmSelection(student, row, 'volunteerthree'));
+
+            const rejectBtn = document.createElement('button');
+            rejectBtn.textContent = '拒绝选择';
+            rejectBtn.classList.add('rejectBtn');
+            rejectBtn.addEventListener('click', () => rejectSelection(student, row));
+
+            row.innerHTML = `<td>${student.name}</td>
+                             <td>${student.examID}</td>`;
+            row.appendChild(confirmBtn);
+            row.appendChild(rejectBtn);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("加载学生信息失败，请稍后再试！");
+    });
+};
+
+        // 确认所有选择
+function confirmAllSelections() {
+    if (window.confirm("确认提交所有选择吗？")) {
+        if (needstudent > 0) {
+            // 发送请求将当前teacherID和剩余招生人数保存到数据库
+            fetch('/save_remained_enrollment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    teacherID: teacherID,
+                    remainedEnrollment: needstudent
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("招生指标数仍有剩余，即将跳转到学科集中商议界面");
+                    window.location.href = `/teacher_last_choose?teacherID=${teacherID}&needstudent=${needstudent}`;
+                } else {
+                    alert("保存剩余招生指标失败，请稍后再试！");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("出现错误，请稍后再试！");
+            });
+        } else {
+            alert("招生指标数已用完，无法选择更多学生！");
+        }
+    }
+}
+    </script>
 </body>
 </html>
