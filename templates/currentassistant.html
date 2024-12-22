@@ -3,9 +3,124 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>currentassistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>招生简章</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        header {
+            background: #35424a;
+            color: #ffffff;
+            padding-top: 30px;
+            min-height: 70px;
+            border-bottom: #e8491d 3px solid;
+        }
+        header h1 {
+            text-transform: uppercase;
+            margin: 0;
+            font-size: 24px;
+            text-align: center;
+        }
+        .content {
+            background: #ffffff;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .content h2 {
+            color: #35424a;
+        }
+        .content p {
+            text-indent: 2em;
+        }
+        footer {
+            padding: 20px;
+            text-align: center;
+            background: #35424a;
+            color: #ffffff;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse; /* 使边框合并为一个单一的边框 */
+        }
+        th, td {
+            border: 1px solid black; /* 设置边框为1px宽的黑色实线 */
+            padding: 8px; /* 设置单元格内的填充 */
+            text-align: left; /* 设置文本对齐方式 */
+        }
+        th {
+            background-color: #f2f2f2; /* 设置表头背景颜色 */
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div class="container">
+            <h1>皮城大学招生简章</h1>
+        </div>
+    </header>
 
+    <div class="container">
+        <div class="content">
+            <h2>一、学校简介</h2>
+            <p>皮城大学是一所历史悠久、文化底蕴深厚的高等学府，位于风景秀丽的XX市。学校秉承“厚德博学、求实创新”的校训，致力于培养德智体美劳全面发展的社会主义建设者和接班人。</p>
+
+            <h2>二、招生专业及计划</h2>
+            <p>本次招生涵盖以下专业：</p>
+            <ul>
+                {% for subject in currentassistant['subjects'] %}
+                    <li>{{ subject[0] }}</li>
+                {% endfor %}
+            </ul>
+
+            <h2>三、报考条件</h2>
+            <p>XXXXXXXXXXXXXXXXXXXXXXXX<br>
+               XXXXXXXXXXXXXXXXXXXXXXXX<br>
+               XXXXXXXXXXXXXXXXXXXXXXXX</p>
+
+            <h2>四、报名方式及时间</h2>
+            <p>报名时间：XXXX年XX月XX日至XXXX年XX月XX日。<br>
+
+            <h2>五、考试安排</h2>
+            <p>考试科目：XXXXXXXXXXXXXXXXXXXXXXXX<br>
+               考试时间：XXXX年XX月XX日。</p>
+
+            <h2>六、联系方式</h2>
+            <p>招生办公室电话：XXXX-XXXXXXX<br>
+               招生办公室邮箱：admission@example.com<br>
+               学校地址：XX省XX市XX区XX路XX号。</p>
+
+            <h2>七、招生简章具体详细信息</h2>
+            <ul>
+                <h3>信息学院</h3>
+                <h4>学科:</h4>
+                {% for subject in currentassistant['subjectnotes'] %}
+                    <li>{{ subjectnotes }}</li>
+                {% endfor %}
+                <p>总招生数：{{ currentassistant['needstudents'] }}</p>
+                <h4>专业</h4>
+                {% for subject in currentassistant['majors'] %}
+                    <li>{{ major }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; XXXX年 XX大学/学院. 保留所有权利。</p>
+    </footer>
 </body>
 </html>

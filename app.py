@@ -27,33 +27,23 @@ def admin():
     return render_template('admin_login.html')
 
 
-@app.route('/teacher_choosestudent')
-def teacher_choosestudent():
-    # 连接到数据库
-    conn = pyodbc.connect(f'DRIVER={{SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}')
-    cursor = conn.cursor()
-
-    # 查询教师信息
-    query = "SELECT teacherID, year, majID, majName, needstudent FROM teacherqualification WHERE teacherID = '1'"
-    cursor.execute(query)
-
-    row = cursor.fetchone()
-
-    # 关闭数据库连接
-    conn.close()
-
-    # 如果查询到教师信息，则传递到模板
-    if row:
-        teacherID = row[0]
-        year = row[1]
-        majID = row[2]
-        majName = row[3]
-        needstudent = row[4]
-    else:
-        teacherID = year = majID = majName = needstudent = "未知"
-
-    return render_template('teacher_choosestudent.html', teacherID=teacherID, year=year, majID=majID, majName=majName,
-                           needstudent=needstudent)
+@app.route('/admin2_login', methods=['GET', 'POST'])
+def admin2_login():
+    if request.method == 'POST':  # 注册发送的请求为POST请求
+        username = request.form['username']
+        password = request.form['password']
+        if is_null(username, password):
+            login_massage = "温馨提示：账号和密码是必填"
+            return render_template('admin_login.html', message=login_massage)
+        elif is_existed_admin(username, password):
+            return render_template('admin_index.html', username=username)
+        elif exist_user_admin(username):
+            login_massage = "温馨提示：密码错误，请输入正确密码"
+            return render_template('admin_login.html', message=login_massage)
+        else:
+            login_massage = "温馨提示：不存在该用户，请先注册"
+            return render_template('admin_login.html', message=login_massage)
+    return render_template('student_login.html')
 
 
 @app.route("/submit_scores", methods=["GET", 'POST'])
@@ -267,7 +257,7 @@ def teacher_choosestudent():
     row = cursor.fetchone()
 
     # 关闭数据库连接
-    conn.close()
+
 
     # 如果查询到教师信息，则传递到模板
     if row:
@@ -379,7 +369,7 @@ def get_student_volunteer_info():
             if row[4].strip() == teacherID:
                 student_data["volunteerthree"].append(student)
 
-        conn.close()
+
         return jsonify(student_data)
 
     except Exception as e:
@@ -412,7 +402,7 @@ def get_pending_students_info():
             }
             students.append(student)
 
-        conn.close()
+
         return jsonify({"students": students})
 
     except Exception as e:
@@ -428,23 +418,19 @@ def admit_student():
         teacherID = data['teacherID']
         studentID = data['studentID']
 
-        # 连接到 SQL Server 数据库
-        conn = pyodbc.connect(
-            f'DRIVER={{SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}')
         cursor = conn.cursor()
 
         # 更新 studentvolunteer 表，将 volunteerfour 设置为当前教师ID，并将 chosennum 设置为 4
         query = """
         UPDATE studentvolunteer
-        SET volunteerfour = ?, chosennum = 4
-        WHERE studentID = ?
-        """
-        cursor.execute(query, (teacherID, studentID))
+        SET volunteerfour = '%s', chosennum = 4
+        WHERE studentID = '%s'
+        """% (teacherID, studentID)
+        cursor.execute(query)
         conn.commit()
 
         # 关闭连接
         cursor.close()
-        conn.close()
 
         # 返回成功响应
         return jsonify({"success": True})
@@ -466,22 +452,19 @@ def update_student_volunteer_choice():
         if chosennum not in [1, 2, 3]:
             return jsonify({"success": False, "message": "chosennum值无效，应为1、2或3。"}), 400
 
-        # 数据库连接
-        conn = pyodbc.connect(f'DRIVER={{SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}')
         cursor = conn.cursor()
 
         # 更新studentvolunteer表中的chosennum字段
         query = """
         UPDATE studentvolunteer
-        SET chosennum = ?
-        WHERE studentID = ?
-        """
-        cursor.execute(query, (chosennum, examID))
+        SET chosennum = '%s'
+        WHERE studentID = '%s'
+        """% (chosennum, examID)
+        cursor.execute(query)
         conn.commit()
 
         # 关闭连接
         cursor.close()
-        conn.close()
 
         return jsonify({"success": True, "message": "学生志愿选择更新成功！"})
 
