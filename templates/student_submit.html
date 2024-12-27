@@ -32,8 +32,7 @@
             window.location.href = "{{ url_for('student_index') }}";
         }
         //控制显示提交按钮
-        function toggleButtons() {
-            var i = true; // 假设i的值在这里被设置
+        function toggleButtons(i=true){
             var buttons = document.querySelectorAll('input[type="submit"], input[type="reset"]');
             buttons.forEach(function(button) {
                 button.style.display = i ? '' : 'none';
@@ -53,14 +52,15 @@
                 </th>
                 <th style="text-align:right; border:0">
                     <label for="admission-number">考生准考证号：</label>
-                    <input id="admission-number" name="admission-number" type="text" disabled>
+                    <input id="admission-number" name="admission-number" type="text" value="{{ data[2] }}" disabled>
+                    <input type="hidden" name="hidden-admission-number" value="{{ data[2] }}">
                 </th>
             </tr>
         </table>
         <table>
             <tr>
                 <td>姓名</td>
-                <td style="width:80px"><input id="name" name="name" style="width:80px" type="text" disabled>
+                <td style="width:80px"><input id="name" name="name" style="width:80px" type="text" value="{{ data[1] }}" disabled>
                 </td>
                 <td style="width:60px">性别</td>
                 <td style="width:90px">
@@ -107,7 +107,7 @@
                 <td colspan="2">考生联系方式</td>
                 <td colspan="6">
                     <label for="contact-phone">手机：</label>
-                    <input id="contact-phone" name="contact-phone" type="text" disabled>
+                    <input id="contact-phone" name="contact-phone" type="text" value="{{ data[0] }}" disabled>
 
                     <label for="emergency-contact">紧急联系人手机：</label>
                     <input id="emergency-contact" name="emergency-contact" type="text">
@@ -132,7 +132,7 @@
                     <label for="research-direction">拟报研究方向：</label>
                 </td>
                 <td colspan="5">
-                    <input id="research-direction" name="research-direction" style="width:100%" type="text">
+                    <input id="research-direction" name="research-direction" style="width:100%" type="text" disabled>
                 </td>
             </tr>
             <tr>
@@ -142,12 +142,12 @@
             </tr>
             <tr>
                 <td colspan="3">
-                    <label for="accept-adjustment">是否接受方向调整</label>
+                    <label for="accept-adjustment" >是否接受方向调整</label>
                 </td>
                 <td colspan="5">
-                    <input id="accept-adjustment" name="adjustment" type="radio" value="接受">
+                    <input id="accept-adjustment" name="adjustment" type="radio" value="接受" disabled>
                     <label for="accept-adjustment">接受</label>
-                    <input id="decline-adjustment" name="adjustment" type="radio" value="不接受">
+                    <input id="decline-adjustment" name="adjustment" type="radio" value="不接受" disabled>
                     <label for="decline-adjustment">不接受</label>
                 </td>
             </tr>
@@ -155,10 +155,10 @@
                 <td colspan="3" style="text-align:center;width:250px">除一志愿方向外电子信息下其他方向调整的优先顺序
                 </td>
                 <td colspan="5">
-                    1、<input name="priority1" style="width:90px" type="text">
-                    2、<input name="priority2" style="width:90px" type="text">
-                    3、<input name="priority3" style="width:90px" type="text">
-                    4、<input name="priority4" style="width:90px" type="text">
+                    1、<input name="priority1" style="width:90px" type="text" disabled>
+                    2、<input name="priority2" style="width:90px" type="text" disabled>
+                    3、<input name="priority3" style="width:90px" type="text" disabled>
+                    4、<input name="priority4" style="width:90px" type="text" disabled>
                 </td>
             </tr>
             <tr>
@@ -168,7 +168,7 @@
                     <label class="input-file-button" for="signatureUpload" style="text-decoration:underline;color:purple;">点击上传电子签名</label>
                     <input accept="image/*" id="signatureUpload" name="signatureUpload" style="display:none;"
                            type="file"/>
-                    <img alt="" id="signaturePreview" src="#" style="max-height: 30px;">
+                    <img alt="" id="signaturePreview" src="#" style="max-height: 60px;">
                 </td>
 
             </tr>
@@ -180,13 +180,13 @@
             <tr>
                 <td colspan="2">复试时间和地点</td>
                 <td colspan="6">
-                    <input name="interview-time-place" style="width:100%" type="text">
+                    <input name="interview-time-place" style="width:100%" type="text" disabled>
                 </td>
             </tr>
             <tr>
                 <td colspan="8" rowspan="2">
                     复试小组对考生复试表现的综合评价（外语水平，专业知识，综合素质，培养潜质等方面）：
-                    <textarea cols="50" name="evaluation" rows="4" style="width:100%;resize:none;"></textarea>
+                    <textarea cols="50" name="evaluation" rows="4" style="width:100%;resize:none;" disabled></textarea>
                     <p style="text-align:right">
                         复试组长签字：<img alt="" id="reexaminename" src="#" style="max-height: 30px;">
                     </p>
@@ -201,16 +201,16 @@
             </tr>
             <tr>
                 <td colspan="2" style="text-align:center">
-                    <input name="foreign-language" type="text">
+                    <input name="foreign-language" type="text" disabled>
                 </td>
                 <td colspan="2" style="text-align:center">
-                    <input name="professional-knowledge" type="text">
+                    <input name="professional-knowledge" type="text" disabled>
                 </td>
                 <td colspan="2" style="text-align:center">
-                    <input name="comprehensive-quality" type="text">
+                    <input name="comprehensive-quality" type="text" disabled>
                 </td>
                 <td colspan="2" style="text-align:center">
-                    <input name="total-score" type="text">
+                    <input name="total-score" type="text" disabled>
                 </td>
             </tr>
             <tr>
@@ -228,9 +228,7 @@
         </table>
         <br>
         <div>
-            <input id="save" type="submit" value="暂存" name="save"/>
-            <input id="restore" type="button" value="恢复" name="save"/>
-            <input id="submittable" type="submit" value="提交" name="save"/>
+            <input id="save" type="submit" value="提交" name="save"/>
             <input id="reset" onclick="" type="reset" value="重置"/>
             <input onclick="toStudentIndex()" type="button" value="退出"/>
         </div>

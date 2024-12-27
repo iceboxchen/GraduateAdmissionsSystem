@@ -9,7 +9,7 @@ from model.check_login import is_existed_student, exist_user_student, is_null, i
 from model.check_regist import add_user
 from model.admin_submit import is_null_submit, admin_submit
 from model.getCurrentassistantData import getMajorNote, getSubjectNote, getNeedStudent, getSubject, getMajor
-from model.getstudentState import getstudentState, getstudentState
+from model import getstudentState
 from model.getteacherInfo import getteacherInfo
 from model import materials
 from templates.config import conn
@@ -17,17 +17,20 @@ from templates.config import conn
 app = Flask(__name__)
 
 
+# 选择登录
 @app.route('/')
 def index():
     # pass
     return render_template('identify_choose.html')
 
 
+# 管理员
 @app.route('/admin')
 def admin():
     return render_template('admin_login.html')
 
 
+# 管理员登录
 @app.route('/admin2_login', methods=['GET', 'POST'])
 def admin2_login():
     if request.method == 'POST':  # 注册发送的请求为POST请求
@@ -47,6 +50,7 @@ def admin2_login():
     return render_template('student_login.html')
 
 
+# 管理员输入数据
 @app.route("/submit_scores", methods=["GET", 'POST'])
 def submit_scores():
     if request.method == 'POST':
@@ -65,11 +69,13 @@ def submit_scores():
     return render_template('admin_index.html')
 
 
+# 老师
 @app.route('/teacher_login')
 def teacher_login():
     return render_template('teacher_login.html')
 
 
+# 老师登录
 @app.route('/teacher2_login', methods=['GET', 'POST'])
 def teacher2_login():
     if request.method == 'POST':  # 注册发送的请求为POST请求
@@ -90,11 +96,13 @@ def teacher2_login():
     return render_template('teacher_login.html')
 
 
+# 学生
 @app.route('/student_login', methods=['GET', 'POST'])
 def student_login():
     return render_template('student_login.html')
 
 
+# 学生登录
 @app.route('/student2_login', methods=['GET', 'POST'])
 def student2_login():
     if request.method == 'POST':  # 注册发送的请求为POST请求
@@ -105,10 +113,11 @@ def student2_login():
             return render_template('student_login.html', message=login_massage)
         if is_existed_student(username, password):
             # 假设用户名即为学生ID
-            student_State = getstudentState(username)
+            student_State = getstudentState.getstudentState(username)
+            studentid = getstudentState.getstudentid(username)
             print(student_State)
             if student_State is not None:
-                return render_template('student_index.html', student_State=student_State)
+                return render_template('student_index.html', student_State=student_State, studentid=studentid)
             else:
                 login_message = "温馨提示：无法获取学生状态"
                 return render_template('student_login.html', message=login_message)
@@ -121,16 +130,7 @@ def student2_login():
     return render_template('student_login.html')
 
 
-@app.route('/student_index', methods=['GET', 'POST'])
-def student_index():
-    return render_template('student_index.html')
-
-
-@app.route('/student_submit', methods=['GET', 'POST'])
-def student_submit():
-    return render_template('student_submit.html')
-
-
+# 学生注册
 @app.route("/register", methods=["GET", 'POST'])
 def register():
     if request.method == 'POST':
@@ -150,6 +150,19 @@ def register():
             add_user(request.form['username'], request.form['password'], request.form['studentID'], request.form['studentName'], request.form['studentIDnumber'], request.form['studentPhone'])
             return render_template('student_index.html', username=username)
     return render_template('student_register.html')
+
+
+# 学生主页
+@app.route('/student_index', methods=['GET', 'POST'])
+def student_index():
+    return render_template('student_index.html')
+
+# 学生输入信息
+@app.route('/student_submit', methods=['GET', 'POST'])
+def student_submit():
+    student_id = request.args.get('studentid')
+    data = materials.getdata(student_id)
+    return render_template('student_submit.html', data=data)
 
 
 # 招生简章
@@ -177,14 +190,15 @@ def currentassistant():
     return render_template('currentassistant.html', currentassistant=currentassistant_info)
 
 
-# 上传学生表
+# 读取学生上传信息
 @app.route("/student2_submit", methods=['GET', 'POST'])
 def student2_submit():
-    submit_message = ""
+    submit_message = materials.student_submit_data()
     # 先识别上传的人的身份然后再上传对应的内容
     if request.method == 'POST':
-        majName = request.form['major']  # 复试学科
-        stusex = request.form['gender']  # 学生性别
+        submit_message.majName = request.form['major']  # 复试学科
+        submit_message.majID = materials.getmajorid(submit_message.majName)
+        submit_message.sex = request.form['gender']  # 学生性别
 
         def getnum(str):
             temp = None
@@ -194,58 +208,66 @@ def student2_submit():
                 print("发生异常")
             return materials.get_checkbox(temp)
 
-        isone = getnum('fresh-graduate') # 选择应届生
-        istwo = getnum('previous-graduate') #选择往届生
-        isthree = getnum('equal-education') #选择同等学力
-        isfour = getnum('targeted-student') #选择定向生
-        isfive = getnum('non-targeted-student') #选择非定向生
+        submit_message.isone = getnum('fresh-graduate') # 选择应届生
+        submit_message.istwo = getnum('previous-graduate') #选择往届生
+        submit_message.isthree = getnum('equal-education') #选择同等学力
+        submit_message.isfour = getnum('targeted-student') #选择定向生
+        submit_message.isfive = getnum('non-targeted-student') #选择非定向生
 
-        if request.form['save'] == "提交":
-            if (isone and istwo and isthree) or (isone and istwo) or (istwo and isthree) or (isthree and isone):
-                return render_template('student_submit.html', message="应届生、往届生、同等学力必须三选一", heat="")
-            elif (isfour and isfive) or (not isfour and not isfive):
-                return render_template('student_submit.html', message="请正确选择定向生和非定向生")
+        # if request.form['save'] == "提交":
+        #     if (isone and istwo and isthree) or (isone and istwo) or (istwo and isthree) or (isthree and isone):
+        #         return render_template('student_submit.html', message="应届生、往届生、同等学力必须三选一")
+        #     elif (isfour and isfive) or (not isfour and not isfive):
+        #         return render_template('student_submit.html', message="请正确选择定向生和非定向生")
 
-        studentUCollege = request.form['graduation-school']  # 本科大学
-        studentUTime = request.form['graduation-time']  # 毕业时间
-        studentUMajor = request.form['major-study'] # 毕业专业
+        submit_message.studentUCollege = request.form['graduation-school']  # 本科大学
+        submit_message.studentUTime = request.form['graduation-time']  # 毕业时间
+        submit_message.studentUProgram = request.form['major-study'] # 毕业专业
 
         # password = request.form['contact-phone'] # 考生联系方式不改
-        studentEContaxt = request.form['emergency-contact'] # 紧急联系人手机
+        submit_message.studentEContaxt = request.form['emergency-contact'] # 紧急联系人手机
 
         volunteerone = request.form['advisor-preference1'] # 志愿一教师名
         volunteertwo = request.form['advisor-preference2'] # 志愿二教师名
         volunteerthree = request.form['advisor-preference3'] # 志愿三教师名
 
-        volunteerone = materials.get_teacher_id(volunteerone, majName)
-        volunteertwo = materials.get_teacher_id(volunteertwo, majName)
-        volunteerthree = materials.get_teacher_id(volunteerthree, majName)
+        submit_message.volunteerone = materials.get_teacher_id(volunteerone, submit_message.majName)
+        submit_message.volunteertwo = materials.get_teacher_id(volunteertwo, submit_message.majName)
+        submit_message.volunteerthree = materials.get_teacher_id(volunteerthree, submit_message.majName)
 
-        ResearchInterests = request.form['research-direction']  # 拟报研究方向
+        # ResearchInterests = request.form['research-direction']  # 拟报研究方向
+        #
+        # isReorientation = request.form['adjustment']  # 是否接受方向调整，即选择该一级学科下的其他二级学科
+        # priority1 = request.form['priority1'] # 二级学科1只参与双向选择
+        # priority2 = request.form['priority2'] # 二级学科2只参与双向选择
+        # priority3 = request.form['priority3'] # 二级学科3只参与双向选择
+        # priority4 = request.form['priority4'] # 二级学科4只参与双向选择
 
-        isReorientation = request.form['adjustment']  # 是否接受方向调整，即选择该一级学科下的其他二级学科
-        priority1 = request.form['priority1'] # 二级学科1只参与双向选择
-        priority2 = request.form['priority2'] # 二级学科2只参与双向选择
-        priority3 = request.form['priority3'] # 二级学科3只参与双向选择
-        priority4 = request.form['priority4'] # 二级学科4只参与双向选择
+        # nameImage = request.form['signatureUpload'] # 考生签名（图片）
 
-        nameImage = request.form['signatureUpload'] # 考生签名（图片）
 
-        materials.update_student_submit()
 
         # else:
         #     add_user(request.form['username'], request.form['password'], request.form['studentID'],
         #              request.form['studentName'], request.form['studentIDnumber'], request.form['studentPhone'])
         #     return render_template('student_submit.html', username=username)
-    allinfo = materials.getallinfo()
-    return render_template('student_submit.html', message = submit_message, info = allinfo)
+        student_id = request.form['hidden-admission-number']
+        submit_message.studentID = student_id
+        materials.update_student_submit(submit_message)
+        materials.update_student2_submit(submit_message)
+        student_State = 1
+        materials.setstudentstate(submit_message.studentID, student_State)
+
+    return render_template('student_index.html', student_State=student_State, studentid=submit_message.studentID)
 
 
+# 老师选学生界面
 @app.route('/teacher_last_choose')
 def teacher_last_choose():
     return render_template('teacher_last_choose.html')
 
 
+# 老师选择学生
 @app.route('/teacher_choosestudent')
 def teacher_choosestudent():
     # 连接到数据库
