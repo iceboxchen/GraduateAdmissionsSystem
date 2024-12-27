@@ -78,7 +78,6 @@
 <body>
     <div class="container">
         <h1>您好，欢迎进入本系统</h1>
-        <p style="display:none">{{studentid}}</p>
         <a href="{{ url_for('index') }}">退出</a>
         <br/>
         <!-- 状态文本框 -->
@@ -104,7 +103,7 @@
             <span>被录取</span>
         </div>
         <div class="process-step current">
-            <a href="{{ url_for('student_submit', studentid=studentid) }}" class="button">提交资料</a>
+            <a href="{{ url_for('student_submit') }}" class="button">提交资料</a>
         </div>
     </div>
 </body>
