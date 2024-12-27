@@ -1,5 +1,5 @@
 from exceptiongroup import catch
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from flask import redirect
 from flask import url_for
 from flask import request
@@ -12,6 +12,7 @@ from model.getCurrentassistantData import getMajorNote, getSubjectNote, getNeedS
 from model.getstudentState import getstudentState, getstudentState
 from model.getteacherInfo import getteacherInfo
 from model import materials
+from templates.config import conn
 
 app = Flask(__name__)
 
@@ -455,6 +456,15 @@ def update_student_volunteer_choice():
         cursor = conn.cursor()
 
         # 更新studentvolunteer表中的chosennum字段
+
+        query_state = """
+        UPDATE studentState
+        SET state = 91
+        WHERE studentID = '%s'
+        """% (examID)
+        cursor.execute(query_state)
+        conn.commit()
+
         query = """
         UPDATE studentvolunteer
         SET chosennum = '%s'
