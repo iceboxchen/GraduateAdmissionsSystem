@@ -162,7 +162,7 @@ def student_index():
 def student_submit():
     student_id = request.args.get('studentid')
     data = materials.getdata(student_id)
-    return render_template('student_submit.html',data=data)
+    return render_template('student_submit.html', data=data)
 
 
 # 招生简章
@@ -478,6 +478,15 @@ def update_student_volunteer_choice():
         cursor = conn.cursor()
 
         # 更新studentvolunteer表中的chosennum字段
+
+        query_state = """
+        UPDATE studentState
+        SET state = 91
+        WHERE studentID = '%s'
+        """% (examID)
+        cursor.execute(query_state)
+        conn.commit()
+
         query = """
         UPDATE studentvolunteer
         SET chosennum = '%s'
