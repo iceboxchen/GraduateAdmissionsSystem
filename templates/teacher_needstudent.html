@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>teacher_needstudent</title>
+</head>
+<body>
+    <h1>Enter some text and click the button</h1>
+    <form method="POST" action="/teacher_needstudent">
+        <input type="text" id="textBox" name="textBox" placeholder="Enter your text here">
+        <button type="submit">Submit</button>
+    </form>
+    {% if message %}
+        <p style="color: green;">{{ message }}</p>
+    {% endif %}
+</body>
+</html>

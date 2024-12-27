@@ -12,6 +12,7 @@ from model.getCurrentassistantData import getMajorNote, getSubjectNote, getNeedS
 from model import getstudentState
 from model.getteacherInfo import getteacherInfo
 from model import materials
+from model.setTeacherNeedstudent import setTeacherNeedstudent
 from templates.config import conn
 
 app = Flask(__name__)
@@ -294,6 +295,24 @@ def teacher_choosestudent():
 
     return render_template('teacher_choosestudent.html', teacherID=teacherID, year=year, majID=majID, majName=majName,
                            needstudent=needstudent)
+
+
+
+@app.route('/teacher_needstudent', methods=['GET', 'POST'])
+def teacher_needstudent():
+    if request.method == 'POST':
+        # 获取表单数据
+        teacher_needstudent_input = request.form.get('textBox')
+        setTeacherNeedstudent(teacher_needstudent_input)
+
+        # 设置消息（可选，用于在模板中显示）
+        message = f"You submitted: {teacher_needstudent_input}"
+
+        # 返回模板并传递消息变量
+        return render_template('teacher_needstudent.html', message=message)
+    else:
+        # 如果是GET请求，则直接返回模板（不带消息）
+        return render_template('teacher_needstudent.html', message=None)
 
 
 @app.route('/save_remained_enrollment', methods=['POST'])
